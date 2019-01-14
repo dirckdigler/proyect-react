@@ -1,5 +1,5 @@
 import React from 'react'
-import MovieData from './components/MovieData';
+import PostList from './components/PostList';
 import ReactDOM from 'react-dom'
 import events from 'events'
 import ajax from './ajax'
@@ -9,10 +9,9 @@ const emitter = new events.EventEmitter();
 
 const App = () => (
   <div>
-    <p>Node creation and deletion works only if are logged into Drupal as a user with appropriate permissions edwin.</p>
-    <MovieData />
-    <NodeForm />
     <NodeList />
+    <NodeForm />
+    <PostList />
   </div>
 )
 
@@ -42,7 +41,8 @@ class NodeList extends React.Component {
     // AJAX fetch server/node/rest?_format=json and setState with the response data
     try {
       const axios = await ajax() // wait for an initialized axios object
-      const response = await axios.get('/node/rest') // wait for the POST AJAX request to complete
+      const response = await axios.get('/banner/rest') // wait for the POST AJAX request to complete
+      console.log(response.data, 'edwin')
       if (response.data) {
         // setState will trigger repaint
         this.setState({ nodes: response.data })
@@ -53,6 +53,7 @@ class NodeList extends React.Component {
   }
 
   render() {
+    console.log(this.state.nodes, 'mama')
     const deleteNode = async (nid) => {
       try {
         const axios = await ajax() // wait for an initialized axios object
@@ -64,28 +65,13 @@ class NodeList extends React.Component {
       }
     }
     return (
-      <table>
-        <caption>Nodes promoted to front page</caption>
-        <thead>
-          <tr>
-            <td>NID</td>
-            <td>Title</td>
-            <td>Delete</td>
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.nodes.map((node, index) => {
-            // iterate over the nodes array and map them to "li" elements
-            return (
-              <tr key={index}>
-                <td>{node.nid}</td>
-                <td><a href={node.path} target="_blank">{node.title}</a></td>
-                <td><button onClick={e => deleteNode(node.nid)}>x</button></td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      this.state.nodes.map((node) => {
+        return (
+          <div className='banner'>
+            <img src={node.field_image}></img>
+          </div>
+        )
+      })
     )
   }
 }
